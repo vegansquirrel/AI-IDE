@@ -2,10 +2,10 @@
 set -e
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
-	ROOT=$(dirname $(dirname $(realpath "$0")))
+  realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
+  ROOT=$(dirname $(dirname $(realpath "$0")))
 else
-	ROOT=$(dirname $(dirname $(readlink -f $0)))
+  ROOT=$(dirname $(dirname $(readlink -f $0)))
 fi
 
 VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
@@ -16,14 +16,14 @@ TESTRESOLVER_DATA_FOLDER=`mktemp -d 2>/dev/null`
 cd $ROOT
 
 if [[ "$1" == "" ]]; then
-	AUTHORITY=vscode-remote://test+test
-	EXT_PATH=$ROOT/extensions
-	# Load remote node
-	npm run gulp node
+  AUTHORITY=vscode-remote://test+test
+  EXT_PATH=$ROOT/extensions
+  # Load remote node
+  npm run gulp node
 else
-	AUTHORITY=$1
-	EXT_PATH=$2
-	VSCODEUSERDATADIR=${3:-$VSCODEUSERDATADIR}
+  AUTHORITY=$1
+  EXT_PATH=$2
+  VSCODEUSERDATADIR=${3:-$VSCODEUSERDATADIR}
 fi
 
 export REMOTE_VSCODE=$AUTHORITY$EXT_PATH
@@ -31,20 +31,20 @@ export REMOTE_VSCODE=$AUTHORITY$EXT_PATH
 # Figure out which Electron to use for running tests
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then
-	INTEGRATION_TEST_ELECTRON_PATH="./scripts/code.sh"
+  INTEGRATION_TEST_ELECTRON_PATH="./scripts/code.sh"
 
-	# No extra arguments when running out of sources
-	EXTRA_INTEGRATION_TEST_ARGUMENTS=""
+  # No extra arguments when running out of sources
+  EXTRA_INTEGRATION_TEST_ARGUMENTS=""
 
-	echo "Running remote integration tests out of sources."
+  echo "Running remote integration tests out of sources."
 else
-	export VSCODE_CLI=1
-	export ELECTRON_ENABLE_LOGGING=1
+  export VSCODE_CLI=1
+  export ELECTRON_ENABLE_LOGGING=1
 
-	# Running from a build, we need to enable the vscode-test-resolver extension
-	EXTRA_INTEGRATION_TEST_ARGUMENTS="--extensions-dir=$EXT_PATH  --enable-proposed-api=vscode.vscode-test-resolver --enable-proposed-api=vscode.vscode-api-tests"
+  # Running from a build, we need to enable the vscode-test-resolver extension
+  EXTRA_INTEGRATION_TEST_ARGUMENTS="--extensions-dir=$EXT_PATH  --enable-proposed-api=vscode.vscode-test-resolver --enable-proposed-api=vscode.vscode-api-tests"
 
-	echo "Running remote integration tests with $INTEGRATION_TEST_ELECTRON_PATH as build."
+  echo "Running remote integration tests with $INTEGRATION_TEST_ELECTRON_PATH as build."
 fi
 
 export TESTRESOLVER_DATA_FOLDER=$TESTRESOLVER_DATA_FOLDER
@@ -53,16 +53,16 @@ export TESTRESOLVER_LOGS_FOLDER=$VSCODELOGSDIR/server
 # Figure out which remote server to use for running tests
 if [ -z "$VSCODE_REMOTE_SERVER_PATH" ]
 then
-	echo "Using remote server out of sources for integration tests"
+  echo "Using remote server out of sources for integration tests"
 else
-	echo "Using $VSCODE_REMOTE_SERVER_PATH as server path for integration tests"
-	export TESTRESOLVER_INSTALL_BUILTIN_EXTENSION='ms-vscode.vscode-smoketest-check'
+  echo "Using $VSCODE_REMOTE_SERVER_PATH as server path for integration tests"
+  export TESTRESOLVER_INSTALL_BUILTIN_EXTENSION='ms-vscode.vscode-smoketest-check'
 fi
 
 if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
-	kill_app() { true; }
+  kill_app() { true; }
 else
-	kill_app() { killall $INTEGRATION_TEST_APP_NAME || true; }
+  kill_app() { killall $INTEGRATION_TEST_APP_NAME || true; }
 fi
 
 API_TESTS_EXTRA_ARGS="--disable-telemetry --disable-experiments --skip-welcome --skip-release-notes --crash-reporter-directory=$VSCODECRASHDIR --logsPath=$VSCODELOGSDIR --no-cached-data --disable-updates --use-inmemory-secretstorage --disable-workspace-trust --user-data-dir=$VSCODEUSERDATADIR"
@@ -124,7 +124,7 @@ kill_app
 # Cleanup
 
 if [[ "$3" == "" ]]; then
-	rm -rf $VSCODEUSERDATADIR
+  rm -rf $VSCODEUSERDATADIR
 fi
 
 rm -rf $TESTRESOLVER_DATA_FOLDER

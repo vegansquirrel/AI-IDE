@@ -39,20 +39,20 @@ fi
 
 # Based on https://github.com/bminor/glibc/blob/520b1df08de68a3de328b65a25b86300a7ddf512/elf/cache.c#L162-L245
 case $ARCH in
-	x86_64) LDCONFIG_ARCH="x86-64";;
-	armv7l | armv8l)
+  x86_64) LDCONFIG_ARCH="x86-64";;
+  armv7l | armv8l)
         MIN_GLIBCXX_VERSION="3.4.26"
         LDCONFIG_ARCH="hard-float"
         ;;
-	arm64 | aarch64)
+  arm64 | aarch64)
         BITNESS=$(getconf LONG_BIT)
-		if [ "$BITNESS" = "32" ]; then
-			# Can have 32-bit userland on 64-bit kernel
-			LDCONFIG_ARCH="hard-float"
-		else
-			LDCONFIG_ARCH="AArch64"
-		fi
-		;;
+  	if [ "$BITNESS" = "32" ]; then
+  		# Can have 32-bit userland on 64-bit kernel
+  		LDCONFIG_ARCH="hard-float"
+  	else
+  		LDCONFIG_ARCH="AArch64"
+  	fi
+  	;;
 esac
 
 if [ "$OS_ID" != "alpine" ]; then
@@ -66,20 +66,20 @@ if [ "$OS_ID" != "alpine" ]; then
             libstdcpp_path=$(echo "$libstdcpp_paths" | awk '{print $NF}')
         fi
     elif [ -f /usr/lib/libstdc++.so.6 ]; then
-	    # Typical path
-	    libstdcpp_path='/usr/lib/libstdc++.so.6'
+      # Typical path
+      libstdcpp_path='/usr/lib/libstdc++.so.6'
     elif [ -f /usr/lib64/libstdc++.so.6 ]; then
-	    # Typical path
-	    libstdcpp_path='/usr/lib64/libstdc++.so.6'
+      # Typical path
+      libstdcpp_path='/usr/lib64/libstdc++.so.6'
     else
-	    echo "Warning: Can't find libstdc++.so or ldconfig, can't verify libstdc++ version"
+      echo "Warning: Can't find libstdc++.so or ldconfig, can't verify libstdc++ version"
     fi
 
     while [ -n "$libstdcpp_path" ]; do
-	    # Extracts the version number from the path, e.g. libstdc++.so.6.0.22 -> 6.0.22
-	    # which is then compared based on the fact that release versioning and symbol versioning
-	    # are aligned for libstdc++. Refs https://gcc.gnu.org/onlinedocs/libstdc++/manual/abi.html
-	    # (i-e) GLIBCXX_3.4.<release> is provided by libstdc++.so.6.y.<release>
+      # Extracts the version number from the path, e.g. libstdc++.so.6.0.22 -> 6.0.22
+      # which is then compared based on the fact that release versioning and symbol versioning
+      # are aligned for libstdc++. Refs https://gcc.gnu.org/onlinedocs/libstdc++/manual/abi.html
+      # (i-e) GLIBCXX_3.4.<release> is provided by libstdc++.so.6.y.<release>
         libstdcpp_path_line=$(echo "$libstdcpp_path" | head -n1)
         libstdcpp_real_path=$(readlink -f "$libstdcpp_path_line")
         libstdcpp_version=$(grep -ao 'GLIBCXX_[0-9]*\.[0-9]*\.[0-9]*' "$libstdcpp_real_path" | sort -V | tail -1)
@@ -135,8 +135,8 @@ elif [ -z "$(ldd --version 2>&1 | grep 'musl libc')" ]; then
     fi
 
     while [ -n "$libc_path" ]; do
-		# Rather than trusting the output of ldd --version (which is not always accurate)
-		# we instead use the version of the cached libc.so.6 file itself.
+  	# Rather than trusting the output of ldd --version (which is not always accurate)
+  	# we instead use the version of the cached libc.so.6 file itself.
         libc_path_line=$(echo "$libc_path" | head -n1)
         libc_real_path=$(readlink -f "$libc_path_line")
         libc_version=$(cat "$libc_real_path" | sed -n 's/.*release version \([0-9]\+\.[0-9]\+\).*/\1/p')
@@ -144,7 +144,7 @@ elif [ -z "$(ldd --version 2>&1 | grep 'musl libc')" ]; then
             found_required_glibc=1
             break
         fi
-	    libc_path=$(echo "$libc_path" | tail -n +2)    # remove first line
+      libc_path=$(echo "$libc_path" | tail -n +2)    # remove first line
     done
     if [ "$found_required_glibc" = "0" ]; then
         echo "Warning: Missing GLIBC >= 2.28! from $libc_real_path"
@@ -155,7 +155,7 @@ else
 fi
 
 if [ "$found_required_glibc" = "0" ] || [ "$found_required_glibcxx" = "0" ]; then
-	echo "Error: Missing required dependencies. Please refer to our FAQ https://aka.ms/vscode-remote/faq/old-linux for additional information."
-	# Custom exit code based on https://tldp.org/LDP/abs/html/exitcodes.html
-	exit 99
+  echo "Error: Missing required dependencies. Please refer to our FAQ https://aka.ms/vscode-remote/faq/old-linux for additional information."
+  # Custom exit code based on https://tldp.org/LDP/abs/html/exitcodes.html
+  exit 99
 fi

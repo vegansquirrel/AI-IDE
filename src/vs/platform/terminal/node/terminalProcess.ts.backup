@@ -161,7 +161,8 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 		this._initialCwd = cwd;
 		this._properties[ProcessPropertyType.InitialCwd] = this._initialCwd;
 		this._properties[ProcessPropertyType.Cwd] = this._initialCwd;
-		const useConpty = this._options.windowsEnableConpty && process.platform === 'win32' && getWindowsBuildNumber() >= 18309 && this._options.windowsUseConptyDll;
+		const useConpty = this._options.windowsEnableConpty && process.platform === 'win32' && getWindowsBuildNumber() >= 18309;
+		const useConpty = useConpty && this._options.windowsUseConptyDll;
 		this._ptyOptions = {
 			name,
 			cwd,
@@ -169,6 +170,7 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 			env: env as { [key: string]: string },
 			cols,
 			rows,
+			useConpty,
 			useConpty,
 			// This option will force conpty to not redraw the whole viewport on launch
 			conptyInheritCursor: useConpty && !!shellLaunchConfig.initialText

@@ -2,10 +2,10 @@
 set -e
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
-	ROOT=$(dirname $(dirname $(realpath "$0")))
+  realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
+  ROOT=$(dirname $(dirname $(realpath "$0")))
 else
-	ROOT=$(dirname $(dirname $(readlink -f $0)))
+  ROOT=$(dirname $(dirname $(readlink -f $0)))
 fi
 
 VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
@@ -17,14 +17,14 @@ cd $ROOT
 # Figure out which Electron to use for running tests
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then
-	INTEGRATION_TEST_ELECTRON_PATH="./scripts/code.sh"
+  INTEGRATION_TEST_ELECTRON_PATH="./scripts/code.sh"
 
-	echo "Running integration tests out of sources."
+  echo "Running integration tests out of sources."
 else
-	export VSCODE_CLI=1
-	export ELECTRON_ENABLE_LOGGING=1
+  export VSCODE_CLI=1
+  export ELECTRON_ENABLE_LOGGING=1
 
-	echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
+  echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
 fi
 
 echo "Storing crash reports into '$VSCODECRASHDIR'."
@@ -44,9 +44,9 @@ echo
 API_TESTS_EXTRA_ARGS="--disable-telemetry --disable-experiments --skip-welcome --skip-release-notes --crash-reporter-directory=$VSCODECRASHDIR --logsPath=$VSCODELOGSDIR --no-cached-data --disable-updates --use-inmemory-secretstorage --disable-extensions --disable-workspace-trust --user-data-dir=$VSCODEUSERDATADIR"
 
 if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
-	kill_app() { true; }
+  kill_app() { true; }
 else
-	kill_app() { killall $INTEGRATION_TEST_APP_NAME || true; }
+  kill_app() { killall $INTEGRATION_TEST_APP_NAME || true; }
 fi
 
 echo

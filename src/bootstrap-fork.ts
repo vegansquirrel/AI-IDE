@@ -131,6 +131,8 @@ function pipeLoggingToParent(): void {
 					buf = buf.slice(eol + 1);
 				}
 
+				// @ts-ignore - Node.js stream type compatibility
+				// @ts-ignore - Node.js stream type compatibility
 				original.call(stream, chunk, encoding, callback);
 			},
 		});

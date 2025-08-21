@@ -2,24 +2,24 @@
 set -e
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
-	ROOT=$(dirname $(dirname $(realpath "$0")))
+  realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
+  ROOT=$(dirname $(dirname $(realpath "$0")))
 else
-	ROOT=$(dirname $(dirname $(readlink -f $0)))
+  ROOT=$(dirname $(dirname $(readlink -f $0)))
 fi
 
 cd $ROOT
 
 if [ -z "$VSCODE_REMOTE_SERVER_PATH" ]
 then
-	echo "Using remote server out of sources for integration web tests"
+  echo "Using remote server out of sources for integration web tests"
 else
-	echo "Using $VSCODE_REMOTE_SERVER_PATH as server path for web integration tests"
+  echo "Using $VSCODE_REMOTE_SERVER_PATH as server path for web integration tests"
 fi
 
 if [ ! -e 'test/integration/browser/out/index.js' ];then
-	(cd test/integration/browser && npm run compile)
-	npm run playwright-install
+  (cd test/integration/browser && npm run compile)
+  npm run playwright-install
 fi
 
 
