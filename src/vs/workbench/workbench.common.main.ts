@@ -424,3 +424,5 @@ import './contrib/editTelemetry/browser/editTelemetry.contribution.js';
 
 
 //#endregion
+
+import './contrib/ai/ai.contribution.js';
