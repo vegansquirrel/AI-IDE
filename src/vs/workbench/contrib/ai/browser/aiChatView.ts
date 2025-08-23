@@ -1,29 +1,27 @@
 // /home/rishav/ai-ide-workspace/your-ai-ide/src/vs/workbench/contrib/ai/browser/aiChatView.ts
 
-import 'vs/css!./media/aiChat.js';
-import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane.js';
-import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet.js';
-import { Registry } from 'vs/platform/registry/common/platform.js';
-import { Extensions as ViewExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation, ViewContainer } from 'vs/workbench/common/views.js';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation.js';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding.js';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView.js';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration.js';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey.js';
-import { IViewDescriptorService } from 'vs/workbench/common/views.js';
-import { IOpenerService } from 'vs/platform/opener/common/opener.js';
-import { IThemeService } from 'vs/platform/theme/common/themeService.js';
+import './aiChat.css';
+// import { $, append } from '../../../../base/browser/dom.js';
+import { ViewPane } from '../../../browser/parts/views/viewPane.js';
+import { IViewletViewOptions } from '../../../browser/parts/views/viewsViewlet.js';
+import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
+import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
+import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
+import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
+import { IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
+import { IViewDescriptorService } from '../../../common/views.js';
+import { IOpenerService } from '../../../../platform/opener/common/opener.js';
+import { IThemeService } from '../../../../platform/theme/common/themeService.js';
 import { IAIService, IAIMessage } from '../common/ai.js';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService.js';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors.js';
-import { Codicon } from 'vs/base/common/codicons.js';
-import { DisposableStore } from 'vs/base/common/lifecycle.js';
-import { localize2 } from 'vs/nls.js';
-import { IHoverService } from 'vs/platform/hover/browser/hover.js';
-import { IAccessibleViewInformationService } from 'vs/workbench/services/accessibility/common/accessibleViewInformationService.js';
+import { IEditorService } from '../../../services/editor/common/editorService.js';
+import { DisposableStore } from '../../../../base/common/lifecycle.js';
+import { IHoverService } from '../../../../platform/hover/browser/hover.js';
+import { IAccessibleViewInformationService } from '../../../services/accessibility/common/accessibleViewInformationService.js';
+
+export const AI_CHAT_VIEW_ID = 'workbench.view.aiChat';
 
 export class AIChatViewPane extends ViewPane {
-	static readonly ID = 'workbench.panel.aiChat';
+	static readonly ID = 'workbench.view.aiChat';
 	static readonly TITLE = 'AI Assistant';
 
 	private chatContainer!: HTMLElement;
@@ -70,20 +68,36 @@ export class AIChatViewPane extends ViewPane {
 		// Header
 		const header = document.createElement('div');
 		header.className = 'ai-chat-header';
-		header.innerHTML = `
-			<div class="ai-chat-title">
-				<span class="codicon codicon-sparkle"></span>
-				<span>AI Assistant</span>
-			</div>
-			<div class="ai-chat-actions">
-				<button class="ai-action-button" title="Clear Chat">
-					<span class="codicon codicon-clear-all"></span>
-				</button>
-				<button class="ai-action-button" title="Settings">
-					<span class="codicon codicon-settings-gear"></span>
-				</button>
-			</div>
-		`;
+
+		const title = document.createElement('div');
+		title.className = 'ai-chat-title';
+		const titleIcon = document.createElement('span'); titleIcon.className = 'codicon codicon-sparkle';
+		const titleText = document.createElement('span'); titleText.textContent = 'AI Assistant';
+		title.append(titleIcon, titleText);
+
+
+		const actions = document.createElement('div');
+		actions.className = 'ai-chat-actions';
+
+		const clearBtn = document.createElement('button');
+		clearBtn.className = 'ai-action-button';
+		clearBtn.title = 'Clear Chat';
+		const clearIcon = document.createElement('span');
+		clearIcon.className = 'codicon codicon-clear-all';
+		clearBtn.appendChild(clearIcon);
+
+		const settingsBtn = document.createElement('button');
+		settingsBtn.className = 'ai-action-button';
+		settingsBtn.title = 'Settings';
+		const settingsIcon = document.createElement('span');
+		settingsIcon.className = 'codicon codicon-settings-gear';
+		settingsBtn.appendChild(settingsIcon);
+
+		actions.appendChild(clearBtn);
+		actions.appendChild(settingsBtn);
+		header.appendChild(title);
+		header.appendChild(actions);
+
 
 		// Messages container
 		this.messagesContainer = document.createElement('div');
@@ -99,10 +113,13 @@ export class AIChatViewPane extends ViewPane {
 		// Context indicator
 		const contextIndicator = document.createElement('div');
 		contextIndicator.className = 'ai-context-indicator';
-		contextIndicator.innerHTML = `
-			<span class="codicon codicon-file"></span>
-			<span class="context-text">No file context</span>
-		`;
+		const ctxIcon = document.createElement('span');
+		ctxIcon.className = 'codicon codicon-file';
+		const ctxText = document.createElement('span');
+		ctxText.className = 'context-text';
+		ctxText.textContent = 'No file context';
+		contextIndicator.appendChild(ctxIcon);
+		contextIndicator.appendChild(ctxText);
 
 		// Input wrapper
 		const inputWrapper = document.createElement('div');
@@ -134,16 +151,16 @@ export class AIChatViewPane extends ViewPane {
 
 		// Attach file button
 		const attachButton = document.createElement('button');
-		attachButton.className = 'ai-action-button';
-		attachButton.title = 'Attach current file';
-		attachButton.innerHTML = '<span class="codicon codicon-attach"></span>';
+		attachButton.className = 'ai-action-button'; attachButton.title = 'Attach current file';
+		const attachIcon = document.createElement('span'); attachIcon.className = 'codicon codicon-attach';
+		attachButton.appendChild(attachIcon);
 		attachButton.onclick = () => this.attachCurrentFile();
 
 		// Send button
 		this.sendButton = document.createElement('button');
-		this.sendButton.className = 'ai-send-button';
-		this.sendButton.title = 'Send message (Enter)';
-		this.sendButton.innerHTML = '<span class="codicon codicon-send"></span>';
+		this.sendButton.className = 'ai-send-button'; this.sendButton.title = 'Send message (Enter)';
+		const sendIcon = document.createElement('span'); sendIcon.className = 'codicon codicon-send';
+		this.sendButton.appendChild(sendIcon);
 		this.sendButton.onclick = () => this.sendMessage();
 
 		actionButtons.appendChild(attachButton);
@@ -158,20 +175,23 @@ export class AIChatViewPane extends ViewPane {
 		// Quick actions
 		const quickActions = document.createElement('div');
 		quickActions.className = 'ai-quick-actions';
-		quickActions.innerHTML = `
-			<button class="ai-quick-action" data-action="explain">
-				<span class="codicon codicon-info"></span> Explain
-			</button>
-			<button class="ai-quick-action" data-action="improve">
-				<span class="codicon codicon-edit"></span> Improve
-			</button>
-			<button class="ai-quick-action" data-action="fix">
-				<span class="codicon codicon-debug"></span> Fix Bug
-			</button>
-			<button class="ai-quick-action" data-action="test">
-				<span class="codicon codicon-beaker"></span> Test
-			</button>
-		`;
+
+		const makeQA = (label: string, iconClass: string, action: string) => {
+			const b = document.createElement('button');
+			b.className = 'ai-quick-action';
+			b.dataset.action = action;
+			const ic = document.createElement('span');
+			ic.className = `codicon ${iconClass}`;
+			b.appendChild(ic);
+			b.appendChild(document.createTextNode(' ' + label));
+			return b;
+		};
+
+		quickActions.appendChild(makeQA('Explain', 'codicon-info', 'explain'));
+		quickActions.appendChild(makeQA('Improve', 'codicon-edit', 'improve'));
+		quickActions.appendChild(makeQA('Fix Bug', 'codicon-debug', 'fix'));
+		quickActions.appendChild(makeQA('Test', 'codicon-beaker', 'test'));
+
 
 		// Add event listeners to quick actions
 		quickActions.querySelectorAll('.ai-quick-action').forEach(button => {
@@ -193,32 +213,50 @@ export class AIChatViewPane extends ViewPane {
 		header.querySelector('.ai-action-button')?.addEventListener('click', () => {
 			this.clearChat();
 		});
+
 	}
 
 	private addWelcomeMessage(): void {
-		const welcomeMsg = document.createElement('div');
-		welcomeMsg.className = 'ai-message ai-message-assistant ai-welcome';
-		welcomeMsg.innerHTML = `
-			<div class="ai-message-avatar">
-				<span class="codicon codicon-sparkle"></span>
-			</div>
-			<div class="ai-message-content">
-				<div class="ai-message-text">
-					<h3>👋 Welcome to AI Assistant!</h3>
-					<p>I can help you with:</p>
-					<ul>
-						<li>📝 Explaining code</li>
-						<li>🐛 Finding and fixing bugs</li>
-						<li>✨ Improving code quality</li>
-						<li>📚 Writing documentation</li>
-						<li>🧪 Generating tests</li>
-					</ul>
-					<p>Select some code and ask me anything!</p>
-				</div>
-			</div>
-		`;
-		this.messagesContainer.appendChild(welcomeMsg);
+		const wrap = document.createElement('div');
+		wrap.className = 'ai-message ai-message-assistant ai-welcome';
+
+		const avatar = document.createElement('div');
+		avatar.className = 'ai-message-avatar';
+		const icon = document.createElement('span');
+		icon.className = 'codicon codicon-sparkle';
+		avatar.appendChild(icon);
+
+		const content = document.createElement('div');
+		content.className = 'ai-message-content';
+
+		const text = document.createElement('div');
+		text.className = 'ai-message-text';
+
+		const h3 = document.createElement('h3');
+		h3.textContent = 'Welcome to Optqo Assistant!';
+
+		const p1 = document.createElement('p');
+		p1.textContent = 'I can help you with:';
+
+		const ul = document.createElement('ul');
+		['Explaining code', 'Finding and fixing bugs', 'Improving code quality', 'Writing documentation', 'Generating tests']
+			.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+
+		const p2 = document.createElement('p');
+		p2.textContent = 'Select some code and ask me anything!';
+
+		text.appendChild(h3);
+		text.appendChild(p1);
+		text.appendChild(ul);
+		text.appendChild(p2);
+
+		content.appendChild(text);
+		wrap.appendChild(avatar);
+		wrap.appendChild(content);
+
+		this.messagesContainer.appendChild(wrap);
 	}
+
 
 	private async sendMessage(): Promise<void> {
 		const text = this.inputField.value.trim();
@@ -251,7 +289,7 @@ export class AIChatViewPane extends ViewPane {
 		this.showTypingIndicator();
 
 		try {
-
+			// TODO: call service, await response, then this.addMessage(...)
 			// Remove typing indicator
 			this.hideTypingIndicator();
 
@@ -275,13 +313,12 @@ export class AIChatViewPane extends ViewPane {
 		// Avatar
 		const avatar = document.createElement('div');
 		avatar.className = 'ai-message-avatar';
-		if (message.role === 'user') {
-			avatar.innerHTML = '<span class="codicon codicon-account"></span>';
-		} else if (message.role === 'assistant') {
-			avatar.innerHTML = '<span class="codicon codicon-sparkle"></span>';
-		} else {
-			avatar.innerHTML = '<span class="codicon codicon-info"></span>';
-		}
+		const avatarIcon = document.createElement('span');
+		avatarIcon.className =
+			message.role === 'user' ? 'codicon codicon-account' :
+				message.role === 'assistant' ? 'codicon codicon-sparkle' :
+					'codicon codicon-info';
+		avatar.appendChild(avatarIcon);
 
 		// Content
 		const content = document.createElement('div');
@@ -290,16 +327,17 @@ export class AIChatViewPane extends ViewPane {
 		// Text with markdown support
 		const text = document.createElement('div');
 		text.className = 'ai-message-text';
+		text.textContent = message.content;
 
 		// Simple markdown rendering (you can enhance this)
-		let formattedContent = message.content
-			.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
-			.replace(/`([^`]+)`/g, '<code>$1</code>')
-			.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-			.replace(/\*(.*?)\*/g, '<em>$1</em>')
-			.replace(/\n/g, '<br>');
+		// let formattedContent = message.content
+		// 	.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+		// 	.replace(/`([^`]+)`/g, '<code>$1</code>')
+		// 	.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+		// 	.replace(/\*(.*?)\*/g, '<em>$1</em>')
+		// 	.replace(/\n/g, '<br>');
 
-		text.innerHTML = formattedContent;
+		// text.innerHTML = formattedContent;
 
 		// Timestamp
 		const timestamp = document.createElement('div');
@@ -322,18 +360,26 @@ export class AIChatViewPane extends ViewPane {
 		const indicator = document.createElement('div');
 		indicator.className = 'ai-message ai-message-assistant ai-typing-indicator';
 		indicator.id = 'ai-typing-indicator';
-		indicator.innerHTML = `
-			<div class="ai-message-avatar">
-				<span class="codicon codicon-sparkle"></span>
-			</div>
-			<div class="ai-message-content">
-				<div class="typing-dots">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
-			</div>
-		`;
+
+		const avatar = document.createElement('div');
+		avatar.className = 'ai-message-avatar';
+		const icon = document.createElement('span');
+		icon.className = 'codicon codicon-sparkle';
+		avatar.appendChild(icon);
+
+		const content = document.createElement('div');
+		content.className = 'ai-message-content';
+
+		const dots = document.createElement('div');
+		dots.className = 'typing-dots';
+		dots.appendChild(document.createElement('span'));
+		dots.appendChild(document.createElement('span'));
+		dots.appendChild(document.createElement('span'));
+
+		content.appendChild(dots);
+		indicator.appendChild(avatar);
+		indicator.appendChild(content);
+
 		this.messagesContainer.appendChild(indicator);
 		this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
 	}
@@ -383,30 +429,9 @@ export class AIChatViewPane extends ViewPane {
 
 	private clearChat(): void {
 		this.messages = [];
-		this.messagesContainer.innerHTML = '';
+		while (this.messagesContainer.firstChild) {
+			this.messagesContainer.removeChild(this.messagesContainer.firstChild);
+		}
 		this.addWelcomeMessage();
 	}
 }
-
-// Register view container (sidebar icon)
-const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
-	id: 'aiAssistant',
-	title: localize2('aiAssistant.title', 'AI Assistant'),
-	icon: Codicon.sparkle,
-	order: 2,
-	ctorDescriptor: new SyncDescriptor(AIChatViewPane),
-	storageId: 'aiAssistantView'
-}, ViewContainerLocation.Sidebar);
-
-// Register the view
-Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([{
-	id: AIChatViewPane.ID,
-	name: localize2('aiAssistant.viewName', 'AI Assistant'),
-	containerIcon: Codicon.sparkle,
-	ctorDescriptor: new SyncDescriptor(AIChatViewPane),
-	order: 0,
-	weight: 30,
-	canToggleVisibility: true,
-	canMoveView: true,
-	focusCommand: { id: 'aiChat.focus' }
-}], VIEW_CONTAINER);

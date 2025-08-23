@@ -1,7 +1,7 @@
 // /home/rishav/ai-ide-workspace/your-ai-ide/src/vs/workbench/contrib/ai/common/ai.ts
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation.js';
-import { Event } from 'vs/base/common/event.js';
+import { createDecorator } from '../../../../platform/instantiation/common/instantiation.js';
+import { Event } from '../../../../base/common/event.js';
 
 export const IAIService = createDecorator<IAIService>('aiService');
 

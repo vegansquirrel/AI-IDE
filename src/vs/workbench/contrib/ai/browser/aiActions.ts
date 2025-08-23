@@ -1,11 +1,11 @@
 // /home/rishav/ai-ide-workspace/your-ai-ide/src/vs/workbench/contrib/ai/browser/aiActions.ts
 
-import { registerAction2, Action2 } from 'vs/platform/actions/common/actions.js';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation.js';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes.js';
-import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry.js';
-import { IViewsService } from 'vs/workbench/services/views/common/viewsService.js';   // NEW
-import { localize } from 'vs/nls.js';
+import { registerAction2, Action2 } from '../../../../platform/actions/common/actions.js';
+import { ServicesAccessor } from '../../../../platform/instantiation/common/instantiation.js';
+import { KeyCode, KeyMod } from '../../../../base/common/keyCodes.js';
+import { KeybindingWeight } from '../../../../platform/keybinding/common/keybindingsRegistry.js';
+import { IViewsService } from '../../../services/views/common/viewsService.js';   // NEW
+import { localize } from '../../../../nls.js';
 
 class FocusAIChatAction extends Action2 {
 	static readonly ID = 'aiChat.focus';

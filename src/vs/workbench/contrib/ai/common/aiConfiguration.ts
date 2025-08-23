@@ -1,7 +1,7 @@
 // /home/rishav/ai-ide-workspace/your-ai-ide/src/vs/workbench/contrib/ai/common/aiConfiguration.ts
 
-import { IConfigurationRegistry, Extensions } from 'vs/platform/configuration/common/configurationRegistry.js';
-import { Registry } from 'vs/platform/registry/common/platform.js';
+import { IConfigurationRegistry, Extensions } from '../../../../platform/configuration/common/configurationRegistry.js';
+import { Registry } from '../../../../platform/registry/common/platform.js';
 
 Registry.as<IConfigurationRegistry>(Extensions.Configuration).registerConfiguration({
 	id: 'ai',

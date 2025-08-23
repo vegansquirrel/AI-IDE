@@ -1,14 +1,14 @@
 // /home/rishav/ai-ide-workspace/your-ai-ide/src/vs/workbench/contrib/ai/browser/aiButton.ts
 
-import { registerEditorContribution, EditorContributionInstantiation } from 'vs/editor/browser/editorExtensions.js';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser.js';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation.js';
+import { registerEditorContribution, EditorContributionInstantiation } from '../../../../editor/browser/editorExtensions.js';
+import { ICodeEditor } from '../../../../editor/browser/editorBrowser.js';
+import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
 import { IAIService } from '../common/ai.js';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification.js';
-import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput.js';
-import { Disposable } from 'vs/base/common/lifecycle.js';
+import { INotificationService, Severity } from '../../../../platform/notification/common/notification.js';
+import { IQuickInputService, IQuickPickItem } from '../../../../platform/quickinput/common/quickInput.js';
+import { Disposable } from '../../../../base/common/lifecycle.js';
 import { IEditorService } from '../../../services/editor/common/editorService.js';
-import { IEditorContribution } from 'vs/editor/common/editorCommon.js';
+import { IEditorContribution } from '../../../../editor/common/editorCommon.js';
 
 class AIEditorButton extends Disposable implements IEditorContribution {
 	static readonly ID = 'editor.contrib.aiButton';
@@ -68,10 +68,11 @@ class AIEditorButton extends Disposable implements IEditorContribution {
 		`;
 
 		// Add icon and text
-		this.button.innerHTML = `
-			<span class="codicon codicon-sparkle"></span>
-			<span>AI</span>
-		`;
+		const icon = document.createElement('span');
+		icon.className = 'codicon codicon-sparkle'; // etc
+		this.button.appendChild(icon);
+		this.button.appendChild(document.createTextNode(' Ask AI'));
+
 
 		// Hover effect
 		this.button.onmouseenter = () => {

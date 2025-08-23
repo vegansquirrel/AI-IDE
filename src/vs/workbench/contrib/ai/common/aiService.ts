@@ -1,8 +1,8 @@
 // /home/rishav/ai-ide-workspace/your-ai-ide/src/vs/workbench/contrib/ai/common/aiService.ts
 
 import { IAIService, IAIMessage, AIProvider, IAIConfig } from '../common/ai.js';
-import { Emitter, Event } from 'vs/base/common/event.js';
-import { Disposable } from 'vs/base/common/lifecycle.js';
+import { Emitter, Event } from '../../../../base/common/event.js';
+import { Disposable } from '../../../../base/common/lifecycle.js';
 
 export class AIService extends Disposable implements IAIService {
 	readonly _serviceBrand: undefined;
