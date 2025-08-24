@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 // /home/rishav/ai-ide-workspace/your-ai-ide/src/vs/workbench/contrib/ai/browser/aiChatView.ts
 
 import './aiChat.css';
@@ -30,6 +35,7 @@ export class AIChatViewPane extends ViewPane {
 	private inputField!: HTMLTextAreaElement;
 	private sendButton!: HTMLButtonElement;
 	private messages: IAIMessage[] = [];
+	private attachedContext?: string;
 	private readonly disposables = this._register(new DisposableStore());
 
 	constructor(
@@ -273,34 +279,29 @@ export class AIChatViewPane extends ViewPane {
 			timestamp: new Date()
 		});
 
-		// Get current editor context
+		// Optional editor context (selected text)
+		let context: string | undefined;
 		const editor = this.editorService.activeTextEditorControl;
-
 		if (editor && 'getModel' in editor) {
 			const model = (editor as any).getModel();
 			const selection = (editor as any).getSelection();
-
 			if (model && selection && !selection.isEmpty()) {
 				context = model.getValueInRange(selection);
 			}
 		}
-
+		if (!context && this.attachedContext) {          // NEW
+			context = this.attachedContext;                // NEW
+		}
 		// Show typing indicator
 		this.showTypingIndicator();
 
 		try {
-			// TODO: call service, await response, then this.addMessage(...)
-			// Remove typing indicator
+			//  This actually sends the prompt to the AI service
+			await this.aiService.chat(text, context);
+		} catch (error: any) {
+			this.addMessage({ role: 'system', content: `Error: ${error.message}`, timestamp: new Date() });
+		} finally {
 			this.hideTypingIndicator();
-
-			// Response is already added via the event listener
-		} catch (error) {
-			this.hideTypingIndicator();
-			this.addMessage({
-				role: 'system',
-				content: `Error: ${error.message}`,
-				timestamp: new Date()
-			});
 		}
 	}
 
@@ -399,6 +400,7 @@ export class AIChatViewPane extends ViewPane {
 
 		const model = (editor as any).getModel();
 		if (model) {
+			this.attachedContext = model.getValue();
 			const fileName = model.uri?.path?.split('/').pop() || 'current file';
 			const contextIndicator = this.inputContainer.querySelector('.context-text');
 			if (contextIndicator) {

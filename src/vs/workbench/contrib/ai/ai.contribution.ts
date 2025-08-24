@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import './browser/aiChat.css';
 
 import { Registry } from '../../../platform/registry/common/platform.js';
@@ -16,6 +21,7 @@ import { AIService } from './common/aiService.js';
 // Side-effect feature modules (ensure they execute)
 import './browser/aiButton.js';
 import './browser/aiActions.js';
+import './common/aiConfiguration.js';
 import { AIChatViewPane, AI_CHAT_VIEW_ID } from './browser/aiChatView.js';
 
 import { localize2 } from '../../../nls.js';
